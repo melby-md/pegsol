@@ -1,0 +1,6 @@
+pegsol
+pegsol.exe
+*.exe
+*.o
+*.obj
+a.out

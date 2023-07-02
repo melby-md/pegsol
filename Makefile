@@ -1,0 +1,14 @@
+CC = cc -std=c99
+SDL_CONFIG = sdl2-config
+SDL_FLAGS = --cflags --libs
+WARNINGS = -Wall -Wextra -Wvla -Wno-unused-parameter
+
+all: pegsol
+
+pegsol: main.c
+	$(CC) $(WARNINGS) $(CFLAGS) -o $@ $< $$($(SDL_CONFIG) $(SDL_FLAGS))
+
+clean:
+	rm -f pegsol pegsol.exe
+
+.PHONY: all
