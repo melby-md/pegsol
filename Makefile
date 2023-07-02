@@ -11,4 +11,4 @@ pegsol: main.c
 clean:
 	rm -f pegsol pegsol.exe
 
-.PHONY: all
+.PHONY: all clean

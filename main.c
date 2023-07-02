@@ -160,7 +160,7 @@ main(int argc, char *args[])
 			for (int x = 0; x <= 6; x++) {
 				if ((y > 1 && y < 5) || (x > 1 && x <5)) {
 					int rad = radius;
-					if (pegs[i] == 1) {
+					if (pegs[i]) {
 						if (i == selected)
 							SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 						else

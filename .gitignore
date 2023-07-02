@@ -1,6 +1,8 @@
 pegsol
-pegsol.exe
-*.exe
+a.out
 *.o
 *.obj
-a.out
+*.exe
+*~
+*.swp
+*.swo
