@@ -58,20 +58,27 @@ draw_circle(SDL_Renderer *renderer, int x, int y, int rad)
 static bool
 is_valid_movement(uint8_t *pegs, int peg, int dest, int *deleted)
 {
+	*deleted = -1;
+
 	switch (dest - peg) {
 	case 2:
 		*deleted = peg + 1;
-		return true;
+		break;
 	case -2:
 		*deleted = peg - 1;
-		return true;
+		break;
 	case 14:
 		*deleted = peg + 7;
-		return true;
+		break;
 	case -14:
 		*deleted = peg - 7;
-		return true;
 	}
+
+	if (*deleted < 0)
+		return false;
+
+	if (pegs[*deleted/7] & 1 << *deleted%7)
+		return true;
 
 	return false;
 }
@@ -156,7 +163,7 @@ main(int argc, char *args[])
 				SDL_GetMouseState(&x, &y);
 				if ((y > tile*2 && y < tile*5) || (x > tile*2 && x < tile*5)) {
 					x_s = x -x%tile + half_tile;
-					y_s = y-y%tile + half_tile;
+					y_s = y -y%tile + half_tile;
 					if ((x*x - 2*x*x_s + x_s*x_s) + (y*y - 2*y*y_s + y_s*y_s) < radius*radius) {
 						int x_n = x/tile;
 						int y_n = y/tile;
