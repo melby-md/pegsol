@@ -218,7 +218,7 @@ main(int argc, char *args[])
 				quit = true;
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				int x, y, x_s, y_s, n;
+				int x, y;
 				SDL_GetMouseState(&x, &y);
 
 				if (!((y > tile*2 && y < tile*5) || (x > tile*2 && x < tile*5))) {
@@ -226,20 +226,21 @@ main(int argc, char *args[])
 					continue;
 				}
 
-				x_s = x -x%tile + half_tile;
-				y_s = y -y%tile + half_tile;
-				if ((x*x - 2*x*x_s + x_s*x_s) + (y*y - 2*y*y_s + y_s*y_s) >= radius*radius) {
-					selected = -1;
-					continue;
-				}
-
 				int x_n = x/tile;
 				int y_n = y/tile;
-				n = y_n*7 + x_n;
+				int n = y_n*7 + x_n;
 
 				if (pegs[y_n] & 1 << x_n) {
-					selected = n;
-					continue;
+					int x_s = x -x%tile + half_tile;
+					int y_s = y -y%tile + half_tile;
+					if (
+						(x*x - 2*x*x_s + x_s*x_s) +
+						(y*y - 2*y*y_s + y_s*y_s)
+						< radius*radius
+					) {
+						selected = n;
+						continue;
+					}
 				}
 
 				int deleted;
@@ -258,6 +259,7 @@ main(int argc, char *args[])
 				}
 
 				render(renderer, pegs, size, selected);
+
 				char *msg;
 				if (res == -1)
 					msg = "You Win!";
