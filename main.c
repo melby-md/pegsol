@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "SDL.h"
 
@@ -54,50 +55,21 @@ draw_circle(SDL_Renderer *renderer, int x, int y, int rad)
     return status;
 }
 
-static int
-offset(int peg)
-{
-	if (peg > 29)
-		return peg + 14;
-	else if (peg > 26)
-		return peg + 10;
-	else if (peg > 5)
-		return peg + 8;
-	else if (peg > 2)
-		return peg + 6;
-	return peg + 2;
-}
-
 static bool
-is_valid_movement(bool *pegs, int peg, int dest, int *deleted)
+is_valid_movement(uint8_t *pegs, int peg, int dest, int *deleted)
 {
-	int p = offset(peg);
-	int d = offset(dest);
-
-	switch (d - p) {
+	switch (dest - peg) {
 	case 2:
 		*deleted = peg + 1;
 		return true;
 	case -2:
-		*deleted = peg -1;
+		*deleted = peg - 1;
 		return true;
 	case 14:
-		if (peg < 3) {
-			*deleted = peg + 3;
-		} else if (peg < 6 || dest > 29) {
-			*deleted = peg + 5;
-		} else {
-			*deleted = peg + 7;
-		}
+		*deleted = peg + 7;
 		return true;
 	case -14:
-		if (peg > 29) {
-			*deleted = peg - 3;
-		} else if (peg > 26 || dest < 3) {
-			*deleted = peg - 5;
-		} else {
-			*deleted = peg - 7;
-		}
+		*deleted = peg - 7;
 		return true;
 	}
 
@@ -107,12 +79,11 @@ is_valid_movement(bool *pegs, int peg, int dest, int *deleted)
 int
 main(int argc, char *args[])
 {
-	bool pegs[33];
+	uint8_t pegs[7] = {127, 127, 127, 127, 127, 127, 127};
 	int selected = -1;
 
-	for(int i = 0; i < 33; i++)
-		pegs[i] = 1;
-	pegs[16] = 0;
+	pegs[3] &= ~(1 << 3);
+
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		SDL_ShowSimpleMessageBox(
@@ -160,7 +131,7 @@ main(int argc, char *args[])
 			for (int x = 0; x <= 6; x++) {
 				if ((y > 1 && y < 5) || (x > 1 && x <5)) {
 					int rad = radius;
-					if (pegs[i]) {
+					if (pegs[y] & 1 << x) {
 						if (i == selected)
 							SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 						else
@@ -170,9 +141,10 @@ main(int argc, char *args[])
 						rad /= 2;
 					}
 					draw_circle(renderer, x*tile+half_tile, y*tile+half_tile, rad);
-					i++;
 				}
+				i++;
 			}
+
 		SDL_RenderPresent(renderer);
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -186,21 +158,20 @@ main(int argc, char *args[])
 					x_s = x -x%tile + half_tile;
 					y_s = y-y%tile + half_tile;
 					if ((x*x - 2*x*x_s + x_s*x_s) + (y*y - 2*y*y_s + y_s*y_s) < radius*radius) {
-						if (y > tile*2 && y < tile*5)
-							n = 6 + x/tile + (y/tile-2)*7;
-						else
-							n = x/tile + (y/tile)*3 -2 + (y >= tile*5)*12;
+						int x_n = x/tile;
+						int y_n = y/tile;
+						n = y_n*7 + x_n;
 
-						if (pegs[n]) {
+						if (pegs[y_n] & 1 << x_n) {
 							selected = n;
 							continue;
 						}
 
 						int deleted;
 						if (is_valid_movement(pegs, selected, n, &deleted)) {
-							pegs[deleted] = 0;
-							pegs[selected] = 0;
-							pegs[n] = 1;
+							pegs[deleted/7] &= ~(1 << deleted%7);
+							pegs[selected/7] &= ~(1 << selected%7);
+							pegs[n/7] |= 1 << n%7;
 						} else
 							selected = -1;
 

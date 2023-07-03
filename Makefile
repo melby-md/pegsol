@@ -1,7 +1,7 @@
 CC = cc -std=c99
 SDL_CONFIG = sdl2-config
 SDL_FLAGS = --cflags --libs
-WARNINGS = -Wall -Wextra -Wvla -Wno-unused-parameter
+WARNINGS = -Wall -Wextra -Wvla -Wno-unused-parameter -Wno-unused-function
 
 all: pegsol
 
