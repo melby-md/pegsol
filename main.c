@@ -50,7 +50,7 @@ draw_circle(SDL_Renderer *renderer, int x, int y, int rad)
 }
 
 static int
-locked(uint8_t *pegs)
+locked(const uint8_t *pegs)
 {
 	int a, b, c;
 	int sum = 0;
@@ -104,7 +104,7 @@ locked(uint8_t *pegs)
 }
 
 static bool
-is_valid_movement(uint8_t *pegs, int peg, int dest, int *deleted)
+is_valid_movement(const uint8_t *pegs, int peg, int dest, int *deleted)
 {
 	*deleted = -1;
 
@@ -132,7 +132,7 @@ is_valid_movement(uint8_t *pegs, int peg, int dest, int *deleted)
 }
 
 static void
-render(SDL_Renderer *renderer, uint8_t *pegs, int size, int selected)
+render(SDL_Renderer *renderer, const uint8_t *pegs, int size, int selected)
 {
 	int tile = size / 7;
 	int half_tile = size / 14;
@@ -275,7 +275,7 @@ main(int argc, char *args[])
 		}
 	}
 
-	SDL_DestroyRenderer( renderer );
+	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 
