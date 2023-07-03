@@ -1,52 +1,56 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
+#define OPTPARSE_IMPLEMENTATION
+#define OPTPARSE_API static
+#include "optparse.h"
 #include "SDL.h"
 
 // https://gist.github.com/Gumichan01/332c26f6197a432db91cc4327fcabb1c
 static int
 draw_circle(SDL_Renderer *renderer, int x, int y, int rad)
 {
-    int offsetx, offsety, d;
-    int status;
+	int offsetx, offsety, d;
+	int status;
 
-    offsetx = 0;
-    offsety = rad;
-    d = rad -1;
-    status = 0;
+	offsetx = 0;
+	offsety = rad;
+	d = rad -1;
+	status = 0;
 
-    while (offsety >= offsetx) {
+	while (offsety >= offsetx) {
 
-        status += SDL_RenderDrawLine(renderer, x - offsety, y + offsetx,
-                                     x + offsety, y + offsetx);
-        status += SDL_RenderDrawLine(renderer, x - offsetx, y + offsety,
-                                     x + offsetx, y + offsety);
-        status += SDL_RenderDrawLine(renderer, x - offsetx, y - offsety,
-                                     x + offsetx, y - offsety);
-        status += SDL_RenderDrawLine(renderer, x - offsety, y - offsetx,
-                                     x + offsety, y - offsetx);
+		status += SDL_RenderDrawLine(renderer, x - offsety, y + offsetx,
+									 x + offsety, y + offsetx);
+		status += SDL_RenderDrawLine(renderer, x - offsetx, y + offsety,
+									 x + offsetx, y + offsety);
+		status += SDL_RenderDrawLine(renderer, x - offsetx, y - offsety,
+									 x + offsetx, y - offsety);
+		status += SDL_RenderDrawLine(renderer, x - offsety, y - offsetx,
+									 x + offsety, y - offsetx);
 
-        if (status < 0) {
-            status = -1;
-            break;
-        }
+		if (status < 0) {
+			status = -1;
+			break;
+		}
 
-        if (d >= 2*offsetx) {
-            d -= 2*offsetx + 1;
-            offsetx +=1;
-        }
-        else if (d < 2 * (rad - offsety)) {
-            d += 2 * offsety - 1;
-            offsety -= 1;
-        }
-        else {
-            d += 2 * (offsety - offsetx - 1);
-            offsety -= 1;
-            offsetx += 1;
-        }
-    }
+		if (d >= 2*offsetx) {
+			d -= 2*offsetx + 1;
+			offsetx +=1;
+		}
+		else if (d < 2 * (rad - offsety)) {
+			d += 2 * offsety - 1;
+			offsety -= 1;
+		}
+		else {
+			d += 2 * (offsety - offsetx - 1);
+			offsety -= 1;
+			offsetx += 1;
+		}
+	}
 
-    return status;
+	return status;
 }
 
 static int
@@ -164,14 +168,30 @@ render(SDL_Renderer *renderer, const uint8_t *pegs, int size, int selected)
 }
 
 int
-main(int argc, char *args[])
+main(int argc, char *argv[])
 {
 	uint8_t pegs[7] = {28, 28, 127, 119, 127, 28, 28};
+	int selected = -1;
 	int size = 512;
+
+	int option;
+	struct optparse options;
+
+	optparse_init(&options, argv);
+	while ((option = optparse(&options, "d:")) != -1) {
+		switch (option) {
+		case 'd':
+			size = atoi(options.optarg);
+			break;
+		case '?':
+			SDL_Log("%s: %s\n", argv[0], options.errmsg);
+			exit(1);
+		}
+	}
+
 	int tile = size / 7;
 	int half_tile = size / 14;
 	int radius = size / 26;
-	int selected = -1;
 
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		SDL_ShowSimpleMessageBox(
