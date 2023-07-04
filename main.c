@@ -259,8 +259,8 @@ main(int argc, char *argv[])
 						< radius*radius
 					) {
 						selected = n;
-						continue;
 					}
+					continue;
 				}
 
 				int deleted;
