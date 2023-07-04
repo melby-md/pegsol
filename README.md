@@ -30,5 +30,9 @@ to change sdl2-config flags:
 
 Copyright 2023 Pedro Debs &lt;<pedrodebs1@gmail.com>&gt;
 
-Licensed under the 0BSD license (see the `LICENSE` file).
+This software is released under the 0BSD license unless otherwise noted (see the
+`LICENSE` file or <https://spdx.org/licenses/0BSD.html>).
+
+The file `optparse.h` was obtained in <https://github.com/skeeto/optparse>
+and is free and unencumbered software released into the public domain.
 
