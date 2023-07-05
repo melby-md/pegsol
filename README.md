@@ -4,6 +4,13 @@ Peg Solitaire written in C99 and SDL2.
 
 ## Requirements
 
+If you're on Windows (I will eventually add msvc support):
+
+ - MinGW-w64 and GNU Make (I recomend getting it with [w64devkit](https://github.com/skeeto/w64devkit))
+ - SDL2 (download the mingw version and add the `SDL2-x.x.x\x86_64-w64-mingw32\bin` folder to your path)
+
+If you're on \*NIX:
+
  - Make
  - A C99 compiler
  - SDL2
@@ -25,6 +32,20 @@ to use pkg-config instead:
 to change sdl2-config flags:
 
     make SDL_FLAGS="--cflags --static-libs"
+
+to build a Windows executable from Windows:
+
+    make pegsol.exe
+
+to cross-compile the Windows executable:
+
+    make CROSS="x86_64-w64-mingw32-" pegsol.exe
+
+## CLI
+
+You can adjust the window size in pixels in the command line:
+
+    ./pegsol -d 600
 
 ## License
 
