@@ -196,7 +196,7 @@ main(int argc, char *argv[])
 			break;
 		case '?':
 			SDL_Log("%s: %s\n", argv[0], options.errmsg);
-			exit(1);
+			return 1;
 		}
 	}
 
@@ -229,7 +229,7 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 
 	if (renderer == NULL) {
 		SDL_ShowSimpleMessageBox(
@@ -244,7 +244,6 @@ main(int argc, char *argv[])
 	SDL_Event e;
 	bool quit = false;
 	while(!quit) {
-		render(renderer, pegs, size, selected);
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
 			case SDL_QUIT:
@@ -326,6 +325,7 @@ main(int argc, char *argv[])
 					quit = true;
 			}
 		}
+		render(renderer, pegs, size, selected);
 	}
 
 	SDL_DestroyRenderer(renderer);
