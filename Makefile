@@ -6,7 +6,7 @@ BIN = pegsol$(EXE)
 
 all: $(BIN)
 
-$(BIN): main.c
+$(BIN): main.c optparse.h
 	$(CC) $(WARNINGS) $(CFLAGS) -o $@ $< $$($(SDL_CONFIG) $(SDL_FLAGS))
 
 clean:

@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #define OPTPARSE_IMPLEMENTATION
@@ -101,10 +102,7 @@ locked(const uint8_t *pegs)
 			sum += a + b + c;
 		}
 	}
-	if (sum == 1)
-		return -1;
-	else
-		return 1;
+	return sum;
 }
 
 static bool
@@ -167,11 +165,24 @@ render(SDL_Renderer *renderer, const uint8_t *pegs, int size, int selected)
 	SDL_RenderPresent(renderer);
 }
 
+static inline void
+setup_board(uint8_t *pegs, int *selected)
+{
+	pegs[0] = 28;  // 0b00011100
+	pegs[1] = 28;  // 0b00011100
+	pegs[2] = 127; // 0b01111111
+	pegs[3] = 119; // 0b01110111
+	pegs[4] = 127; // 0b01111111
+	pegs[5] = 28;  // 0b00011100
+	pegs[6] = 28;  // 0b00011100
+	*selected = -1;
+}
+
 int
 main(int argc, char *argv[])
 {
-	uint8_t pegs[7] = {28, 28, 127, 119, 127, 28, 28};
-	int selected = -1;
+	uint8_t pegs[7];
+	int selected;
 	int size = 512;
 
 	int option;
@@ -228,6 +239,8 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
+	setup_board(pegs, &selected);
+
 	SDL_Event e;
 	bool quit = false;
 	while(!quit) {
@@ -280,19 +293,37 @@ main(int argc, char *argv[])
 
 				render(renderer, pegs, size, selected);
 
-				char *msg;
-				if (res == -1)
-					msg = "You Win!";
-				else
-					msg = "You Lose";
+				char msg[] = "You Win!\nThere is only 1 peg left!";
+				if (res > 1)
+					// Don't worry, there will never be an overflow here :)
+					sprintf(msg, "You lose\nThere are %d pegs left", res);
 
-				SDL_ShowSimpleMessageBox(
+
+				SDL_MessageBoxButtonData btns[] = {
+					{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+					0,
+					"quit"},
+					{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+					1,
+					"restart"}
+				};
+
+				SDL_MessageBoxData msgbox = {
 					SDL_MESSAGEBOX_INFORMATION,
+					window,
 					"END",
 					msg,
-					window	
-				);
-				quit = true;
+					2,
+					btns,
+					NULL
+				};
+
+				int rc;
+				SDL_ShowMessageBox(&msgbox, &rc);
+				if (rc)
+					setup_board(pegs, &selected);
+				else
+					quit = true;
 			}
 		}
 	}
