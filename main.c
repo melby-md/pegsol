@@ -203,8 +203,11 @@ main(int argc, char *argv[])
 		SDL_Log("SDL_CreateRenderer(): %s", SDL_GetError());
 		return 1;
 	}
-	SDL_RWops *pixelsWop = SDL_RWFromConstMem((const unsigned char *)peg_bmp, peg_bmp_len);
-	SDL_Surface *surface = SDL_LoadBMP_RW(pixelsWop, 1);
+
+	SDL_RWops *bitmap = SDL_RWFromConstMem((const unsigned char *)peg_bmp, peg_bmp_len);
+	SDL_Surface *surface = SDL_LoadBMP_RW(bitmap, 1);
+	SDL_FreeRW(bitmap);
+
 	if (surface == NULL)
 		return 1;
 
