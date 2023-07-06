@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,55 +6,10 @@
 #define OPTPARSE_API static
 #include "optparse.h"
 #include "SDL.h"
-
-// https://gist.github.com/Gumichan01/332c26f6197a432db91cc4327fcabb1c
-static int
-draw_circle(SDL_Renderer *renderer, int x, int y, int rad)
-{
-	int offsetx, offsety, d;
-	int status;
-
-	offsetx = 0;
-	offsety = rad;
-	d = rad -1;
-	status = 0;
-
-	while (offsety >= offsetx) {
-
-		status += SDL_RenderDrawLine(renderer, x - offsety, y + offsetx,
-									 x + offsety, y + offsetx);
-		status += SDL_RenderDrawLine(renderer, x - offsetx, y + offsety,
-									 x + offsetx, y + offsety);
-		status += SDL_RenderDrawLine(renderer, x - offsetx, y - offsety,
-									 x + offsetx, y - offsety);
-		status += SDL_RenderDrawLine(renderer, x - offsety, y - offsetx,
-									 x + offsety, y - offsetx);
-
-		if (status < 0) {
-			status = -1;
-			break;
-		}
-
-		if (d >= 2*offsetx) {
-			d -= 2*offsetx + 1;
-			offsetx +=1;
-		}
-		else if (d < 2 * (rad - offsety)) {
-			d += 2 * offsety - 1;
-			offsety -= 1;
-		}
-		else {
-			d += 2 * (offsety - offsetx - 1);
-			offsety -= 1;
-			offsetx += 1;
-		}
-	}
-
-	return status;
-}
+#include "peg.h"
 
 static int
-locked(const uint8_t *pegs)
+locked(const Uint8 *pegs)
 {
 	int a, b, c;
 	int sum = 0;
@@ -106,7 +60,7 @@ locked(const uint8_t *pegs)
 }
 
 static bool
-is_valid_movement(const uint8_t *pegs, int peg, int dest, int *deleted)
+is_valid_movement(const Uint8 *pegs, int peg, int dest, int *deleted)
 {
 	*deleted = -1;
 
@@ -134,11 +88,10 @@ is_valid_movement(const uint8_t *pegs, int peg, int dest, int *deleted)
 }
 
 static void
-render(SDL_Renderer *renderer, const uint8_t *pegs, int size, int selected)
+render(SDL_Renderer *renderer, SDL_Texture *pegt, const Uint8 *pegs, int size, int selected)
 {
 	int tile = size / 7;
-	int half_tile = size / 14;
-	int radius = size / 26;
+
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_RenderClear(renderer);
 
@@ -148,25 +101,37 @@ render(SDL_Renderer *renderer, const uint8_t *pegs, int size, int selected)
 				continue;
 			}
 
+			SDL_Rect dest;
+
 			int i = y*7 + x;
-			int rad = radius;
 			if (pegs[y] & 1 << x) {
-				if (i == selected)
-					SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-				else
-					SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+				dest.w = size/13;
+				dest.h = size/13;
+				dest.x = x*tile + tile/2-size/26;
+				dest.y = y*tile + tile/2-size/26;
+
+				if (i == selected) {
+					SDL_SetTextureColorMod(pegt, 0, 255, 0);
+				} else {
+					SDL_SetTextureColorMod(pegt, 255, 0, 0);
+				}
 			} else {
-				SDL_SetRenderDrawColor(renderer, 127, 127, 127, 255);
-				rad /= 2;
+				SDL_SetTextureColorMod(pegt, 127, 127, 127);
+
+				dest.w = size/26;
+				dest.h = size/26;
+				dest.x = x*tile + tile/2-size/52;
+				dest.y = y*tile + tile/2-size/52;
 			}
-			draw_circle(renderer, x*tile+half_tile, y*tile+half_tile, rad);
+			SDL_RenderCopy(renderer, pegt, NULL, &dest);
 		}
 
 	SDL_RenderPresent(renderer);
 }
 
 static inline void
-setup_board(uint8_t *pegs, int *selected)
+setup_board(Uint8 *pegs, int *selected)
 {
 	pegs[0] = 28;  // 0b00011100
 	pegs[1] = 28;  // 0b00011100
@@ -181,7 +146,7 @@ setup_board(uint8_t *pegs, int *selected)
 int
 main(int argc, char *argv[])
 {
-	uint8_t pegs[7];
+	Uint8 pegs[7];
 	int selected;
 	int size = 512;
 
@@ -238,6 +203,14 @@ main(int argc, char *argv[])
 		SDL_Log("SDL_CreateRenderer(): %s", SDL_GetError());
 		return 1;
 	}
+	SDL_RWops *pixelsWop = SDL_RWFromConstMem((const unsigned char *)peg_bmp, peg_bmp_len);
+	SDL_Surface *surface = SDL_LoadBMP_RW(pixelsWop, 1);
+	if (surface == NULL)
+		return 1;
+
+	SDL_Texture *pegt = SDL_CreateTextureFromSurface(renderer, surface);
+
+	SDL_FreeSurface(surface);
 
 	setup_board(pegs, &selected);
 
@@ -290,7 +263,7 @@ main(int argc, char *argv[])
 					continue;
 				}
 
-				render(renderer, pegs, size, selected);
+				render(renderer, pegt, pegs, size, selected);
 
 				char msg[] = "You Win!\nThere is only 1 peg left!";
 				if (res > 1)
@@ -325,7 +298,7 @@ main(int argc, char *argv[])
 					quit = true;
 			}
 		}
-		render(renderer, pegs, size, selected);
+		render(renderer, pegt, pegs, size, selected);
 	}
 
 	SDL_DestroyRenderer(renderer);
