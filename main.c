@@ -222,6 +222,10 @@ main(int argc, char *argv[])
 	while(!quit) {
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
+			case SDL_KEYDOWN: 
+				if (e.key.keysym.sym !=  'q')
+					break;
+				// fall through
 			case SDL_QUIT:
 				quit = true;
 				break;
@@ -304,6 +308,7 @@ main(int argc, char *argv[])
 		render(renderer, pegt, pegs, size, selected);
 	}
 
+	SDL_DestroyTexture(pegt);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
