@@ -223,9 +223,15 @@ main(int argc, char *argv[])
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
 			case SDL_KEYDOWN: 
-				if (e.key.keysym.sym !=  'q')
+				switch (e.key.keysym.sym) {
+				case 'r':
+					setup_board(pegs, &selected);
 					break;
-				// fall through
+				case 'q':
+					quit = true;
+					break;
+				}
+				break;
 			case SDL_QUIT:
 				quit = true;
 				break;
