@@ -41,11 +41,23 @@ to cross-compile the Windows executable:
 
     make CROSS="x86_64-w64-mingw32-" pegsol.exe
 
-## CLI
+## Running
+
+The executable is named `pegsol` on \*NIX and `pegsol.exe` on Windows.
 
 You can adjust the window size in pixels in the command line:
 
     ./pegsol -d 600
+
+## How to Play
+
+[Assuming you know how to play peg solitaire.](https://en.wikipedia.org/wiki/Peg_solitaire)
+
+This version uses the english board and is played with the mouse. You click on
+a peg, it becomes green, click on a vacant spot you wish to move the peg, if it
+is an invalid move nothing will happen. To quit press `q` on the keyboard, to
+restart press `r`. When there are no moves left a popup will appear saying if
+you win or lose with the options to restart or quit.
 
 ## License
 
