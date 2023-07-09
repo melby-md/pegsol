@@ -2,6 +2,8 @@
 
 Peg Solitaire written in C99 and SDL2.
 
+![screenshot](img.jpg)
+
 ## Requirements
 
 If you're on Windows (I will eventually add msvc support):
