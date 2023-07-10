@@ -204,7 +204,7 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	SDL_RWops *bitmap = SDL_RWFromConstMem((const unsigned char *)peg_bmp, peg_bmp_len);
+	SDL_RWops *bitmap = SDL_RWFromConstMem(peg_bmp, peg_bmp_len);
 	SDL_Surface *surface = SDL_LoadBMP_RW(bitmap, 1);
 	SDL_FreeRW(bitmap);
 
