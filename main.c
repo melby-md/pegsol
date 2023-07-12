@@ -194,7 +194,7 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
 	if (renderer == NULL) {
 		SDL_ShowSimpleMessageBox(
@@ -220,98 +220,97 @@ main(int argc, char *argv[])
 	SDL_Event e;
 	bool quit = false;
 	while(!quit) {
-		while (SDL_PollEvent(&e)) {
-			switch (e.type) {
-			case SDL_KEYDOWN: 
-				switch (e.key.keysym.sym) {
-				case 'r':
-					setup_board(pegs, &selected);
-					break;
-				case 'q':
-					quit = true;
-					break;
-				}
+		render(renderer, pegt, pegs, size, selected);
+		SDL_WaitEvent(&e);
+		switch (e.type) {
+		case SDL_KEYDOWN: 
+			switch (e.key.keysym.sym) {
+			case 'r':
+				setup_board(pegs, &selected);
 				break;
-			case SDL_QUIT:
+			case 'q':
 				quit = true;
 				break;
-			case SDL_MOUSEBUTTONDOWN:
-				int x, y;
-				SDL_GetMouseState(&x, &y);
-
-				if (!((y > tile*2 && y < tile*5) || (x > tile*2 && x < tile*5))) {
-					selected = -1;
-					continue;
-				}
-
-				int x_n = x/tile;
-				int y_n = y/tile;
-				int n = y_n*7 + x_n;
-
-				if (pegs[y_n] & 1 << x_n) {
-					int x_s = x -x%tile + half_tile;
-					int y_s = y -y%tile + half_tile;
-					if (
-						(x*x - 2*x*x_s + x_s*x_s) +
-						(y*y - 2*y*y_s + y_s*y_s)
-						< radius*radius
-					) {
-						selected = n;
-					}
-					continue;
-				}
-
-				int deleted;
-				if (!is_valid_movement(pegs, selected, n, &deleted)) {
-					selected = -1;
-					continue;
-				}
-
-				pegs[deleted/7] &= ~(1 << deleted%7);
-				pegs[selected/7] &= ~(1 << selected%7);
-				pegs[n/7] |= 1 << n%7;
-
-				int res;
-				if (!(res = locked(pegs))) {
-					continue;
-				}
-
-				render(renderer, pegt, pegs, size, selected);
-
-				char msg[] = "You Win!\nThere is only 1 peg left!";
-				if (res > 1)
-					// Don't worry, there will never be an overflow here :)
-					sprintf(msg, "You lose\nThere are %d pegs left", res);
-
-
-				SDL_MessageBoxButtonData btns[] = {
-					{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
-					0,
-					"quit"},
-					{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
-					1,
-					"restart"}
-				};
-
-				SDL_MessageBoxData msgbox = {
-					SDL_MESSAGEBOX_INFORMATION,
-					window,
-					"END",
-					msg,
-					2,
-					btns,
-					NULL
-				};
-
-				int rc;
-				SDL_ShowMessageBox(&msgbox, &rc);
-				if (rc)
-					setup_board(pegs, &selected);
-				else
-					quit = true;
 			}
+			break;
+		case SDL_QUIT:
+			quit = true;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+
+			if (!((y > tile*2 && y < tile*5) || (x > tile*2 && x < tile*5))) {
+				selected = -1;
+				continue;
+			}
+
+			int x_n = x/tile;
+			int y_n = y/tile;
+			int n = y_n*7 + x_n;
+
+			if (pegs[y_n] & 1 << x_n) {
+				int x_s = x -x%tile + half_tile;
+				int y_s = y -y%tile + half_tile;
+				if (
+					(x*x - 2*x*x_s + x_s*x_s) +
+					(y*y - 2*y*y_s + y_s*y_s)
+					< radius*radius
+				) {
+					selected = n;
+				}
+				continue;
+			}
+
+			int deleted;
+			if (!is_valid_movement(pegs, selected, n, &deleted)) {
+				selected = -1;
+				continue;
+			}
+
+			pegs[deleted/7] &= ~(1 << deleted%7);
+			pegs[selected/7] &= ~(1 << selected%7);
+			pegs[n/7] |= 1 << n%7;
+
+			int res;
+			if (!(res = locked(pegs))) {
+				continue;
+			}
+
+			render(renderer, pegt, pegs, size, selected);
+
+			char msg[] = "You Win!\nThere is only 1 peg left!";
+			if (res > 1)
+				// Don't worry, there will never be an overflow here :)
+				sprintf(msg, "You lose\nThere are %d pegs left", res);
+
+
+			SDL_MessageBoxButtonData btns[] = {
+				{SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT,
+				0,
+				"quit"},
+				{SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT,
+				1,
+				"restart"}
+			};
+
+			SDL_MessageBoxData msgbox = {
+				SDL_MESSAGEBOX_INFORMATION,
+				window,
+				"END",
+				msg,
+				2,
+				btns,
+				NULL
+			};
+
+			int rc;
+			SDL_ShowMessageBox(&msgbox, &rc);
+			if (rc)
+				setup_board(pegs, &selected);
+			else
+				quit = true;
 		}
-		render(renderer, pegt, pegs, size, selected);
 	}
 
 	SDL_DestroyTexture(pegt);
