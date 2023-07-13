@@ -217,12 +217,14 @@ main(int argc, char *argv[])
 
 	setup_board(pegs, &selected);
 
+	render(renderer, pegt, pegs, size, selected);
+
 	SDL_Event e;
-	bool quit = false;
-	while(!quit) {
-		render(renderer, pegt, pegs, size, selected);
+	bool quit;
+	while (!quit) {
 		SDL_WaitEvent(&e);
 		switch (e.type) {
+
 		case SDL_KEYDOWN: 
 			switch (e.key.keysym.sym) {
 			case 'r':
@@ -230,19 +232,21 @@ main(int argc, char *argv[])
 				break;
 			case 'q':
 				quit = true;
-				break;
+				continue;
 			}
 			break;
+
 		case SDL_QUIT:
 			quit = true;
-			break;
+			continue;
+
 		case SDL_MOUSEBUTTONDOWN:
 			int x, y;
 			SDL_GetMouseState(&x, &y);
 
 			if (!((y > tile*2 && y < tile*5) || (x > tile*2 && x < tile*5))) {
 				selected = -1;
-				continue;
+				break;
 			}
 
 			int x_n = x/tile;
@@ -256,16 +260,17 @@ main(int argc, char *argv[])
 					(x*x - 2*x*x_s + x_s*x_s) +
 					(y*y - 2*y*y_s + y_s*y_s)
 					< radius*radius
-				) {
+				)
 					selected = n;
-				}
-				continue;
+				else
+					selected = -1;
+				break;
 			}
 
 			int deleted;
 			if (!is_valid_movement(pegs, selected, n, &deleted)) {
 				selected = -1;
-				continue;
+				break;
 			}
 
 			pegs[deleted/7] &= ~(1 << deleted%7);
@@ -274,7 +279,7 @@ main(int argc, char *argv[])
 
 			int res;
 			if (!(res = locked(pegs))) {
-				continue;
+				break;
 			}
 
 			render(renderer, pegt, pegs, size, selected);
@@ -310,7 +315,13 @@ main(int argc, char *argv[])
 				setup_board(pegs, &selected);
 			else
 				quit = true;
+			break;
+
+		default:
+			continue;
 		}
+
+		render(renderer, pegt, pegs, size, selected);
 	}
 
 	SDL_DestroyTexture(pegt);
