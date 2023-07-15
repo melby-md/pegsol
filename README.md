@@ -31,17 +31,13 @@ to use pkg-config instead:
 
     make SDL_CONFIG="pkg-config sdl2"
 
-to change sdl2-config flags:
+to statically link SDL:
 
-    make SDL_FLAGS="--cflags --static-libs"
-
-to build a Windows executable from Windows:
-
-    make pegsol.exe
+    make STATIC_SDL=1
 
 to cross-compile the Windows executable:
 
-    make CROSS="x86_64-w64-mingw32-" pegsol.exe
+    make CROSS="x86_64-w64-mingw32-"
 
 ## Running
 
