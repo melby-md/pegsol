@@ -208,9 +208,6 @@ main(int argc, char *argv[])
 	SDL_Surface *surface = SDL_LoadBMP_RW(bitmap, 1);
 	SDL_FreeRW(bitmap);
 
-	if (surface == NULL)
-		return 1;
-
 	SDL_Texture *pegt = SDL_CreateTextureFromSurface(renderer, surface);
 
 	SDL_FreeSurface(surface);
@@ -220,7 +217,7 @@ main(int argc, char *argv[])
 	render(renderer, pegt, pegs, size, selected);
 
 	SDL_Event e;
-	bool quit;
+	bool quit = false;
 	while (!quit) {
 		SDL_WaitEvent(&e);
 		switch (e.type) {
