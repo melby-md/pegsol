@@ -206,7 +206,7 @@ main(int argc, char *argv[])
 
 	SDL_RWops *bitmap = SDL_RWFromConstMem(peg_bmp, peg_bmp_len);
 	SDL_Surface *surface = SDL_LoadBMP_RW(bitmap, 1);
-	SDL_FreeRW(bitmap);
+	//SDL_FreeRW(bitmap); This bug is beyond my comprehension
 
 	SDL_Texture *pegt = SDL_CreateTextureFromSurface(renderer, surface);
 
