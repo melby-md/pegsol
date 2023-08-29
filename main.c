@@ -6,7 +6,11 @@
 #define OPTPARSE_API static
 #include "optparse.h"
 #include "SDL.h"
+#include "SDL_ttf.h"
 #include "peg.h"
+
+static SDL_Texture *texto;
+static SDL_Rect txt_rect;
 
 static int
 locked(const Uint8 *pegs)
@@ -106,25 +110,26 @@ render(SDL_Renderer *renderer, SDL_Texture *pegt, const Uint8 *pegs, int size, i
 			int i = y*7 + x;
 			if (pegs[y] & 1 << x) {
 
-				dest.w = size/13;
-				dest.h = size/13;
-				dest.x = x*tile + tile/2-size/26;
-				dest.y = y*tile + tile/2-size/26;
+				dest.w = txt_rect.w;
+				dest.h = txt_rect.h;
+				dest.x = x*tile + tile/2 - txt_rect.w/2;
+				dest.y = y*tile + tile/2 - txt_rect.h/2;
 
 				if (i == selected) {
-					SDL_SetTextureColorMod(pegt, 0, 255, 0);
+					SDL_SetTextureColorMod(texto, 0, 255, 0);
 				} else {
-					SDL_SetTextureColorMod(pegt, 255, 0, 0);
+					SDL_SetTextureColorMod(texto, 255, 0, 0);
 				}
 			} else {
-				SDL_SetTextureColorMod(pegt, 127, 127, 127);
+				SDL_SetTextureColorMod(texto, 127, 127, 127);
 
-				dest.w = size/26;
-				dest.h = size/26;
-				dest.x = x*tile + tile/2-size/52;
-				dest.y = y*tile + tile/2-size/52;
+				dest.w = txt_rect.w/2;
+				dest.h = txt_rect.h/2;
+				dest.x = x*tile + tile/2 - txt_rect.w/4;
+				dest.y = y*tile + tile/2 - txt_rect.h/4;
 			}
-			SDL_RenderCopy(renderer, pegt, NULL, &dest);
+			//SDL_RenderCopy(renderer, pegt, NULL, &dest);
+			SDL_RenderCopy(renderer, texto, NULL, &dest);
 		}
 
 	SDL_RenderPresent(renderer);
@@ -176,6 +181,7 @@ main(int argc, char *argv[])
 		SDL_Log("SDL_Init(): %s", SDL_GetError());
 		return 1;
 	}
+    TTF_Init();
 
 	SDL_Window *window = SDL_CreateWindow(
 		"Peg Solitaire",
@@ -210,6 +216,13 @@ main(int argc, char *argv[])
 
 	SDL_Texture *pegt = SDL_CreateTextureFromSurface(renderer, surface);
 
+	TTF_Font *font = TTF_OpenFont("DejaVuSans.ttf", 110);
+	SDL_Color w = {255, 255, 255, 0};
+	surface = TTF_RenderUTF8_Blended(font, "\u2022", w);
+	texto = SDL_CreateTextureFromSurface(renderer, surface);
+	txt_rect.w = surface->w;
+	txt_rect.h = surface->h;
+	SDL_Log("%d %d", txt_rect.w, txt_rect.h);
 	SDL_FreeSurface(surface);
 
 	setup_board(pegs, &selected);

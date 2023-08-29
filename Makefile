@@ -11,7 +11,7 @@ Windows_NT = .exe
 all: pegsol$($(OS))
 
 pegsol: main.c optparse.h peg.h
-	$(CC) $(WARN) $(CFLAGS) $(LDFLAGS) -o $@ $< $$($(SDL_CONFIG) --cflags $(SDL_LIB))
+	$(CC) $(WARN) $(CFLAGS) $(LDFLAGS) -o $@ $< $$($(SDL_CONFIG) --cflags $(SDL_LIB)) -lSDL2_ttf
 
 pegsol.exe: main.o icon.o
 	$(CC) $(WARN) $(LDFLAGS) -o $@ main.o icon.o $$($(SDL_CONFIG) $(SDL_LIB))
