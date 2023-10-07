@@ -1,4 +1,4 @@
-CC = $(CROSS)cc -std=c99
+CC = $(CROSS)cc
 WINDRES = $(CROSS)windres
 WARN = -Wall -Wextra -Wvla -Wno-unused-parameter -Wno-unused-function
 
@@ -10,8 +10,8 @@ Windows_NT = .exe
 
 all: pegsol$($(OS))
 
-pegsol: main.c optparse.h peg.h
-	$(CC) $(WARN) $(CFLAGS) $(LDFLAGS) -o $@ $< $$($(SDL_CONFIG) --cflags $(SDL_LIB))
+pegsol: main.c peg.h
+	$(CC) -std=c99 $(WARN) $(CFLAGS) $(LDFLAGS) -o $@ $< $$($(SDL_CONFIG) --cflags $(SDL_LIB))
 
 pegsol.exe: main.o icon.o
 	$(CC) $(WARN) $(LDFLAGS) -o $@ main.o icon.o $$($(SDL_CONFIG) $(SDL_LIB))
@@ -19,8 +19,8 @@ pegsol.exe: main.o icon.o
 icon.o: peg.ico
 	echo '1 ICON "peg.ico"' | $(WINDRES) -o $@
 
-main.o: main.c optparse.h peg.h
-	$(CC) $(WARN) $(CFLAGS) -c -o $@ $< $$($(SDL_CONFIG) --cflags)
+main.o: main.c  peg.h
+	$(CC) -std=c99 $(WARN) $(CFLAGS) -c -o $@ $< $$($(SDL_CONFIG) --cflags)
 
 clean:
 	rm -f pegsol pegsol.exe icon.o main.o

@@ -1,11 +1,10 @@
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 
-#define OPTPARSE_IMPLEMENTATION
-#define OPTPARSE_API static
-#include "optparse.h"
 #include "SDL.h"
+
 #include "peg.h"
 
 static int
@@ -148,22 +147,25 @@ main(int argc, char *argv[])
 {
 	Uint8 pegs[7];
 	int selected;
-	int size = 512;
+	int size;
 
-	int option;
-	struct optparse options;
-
-	optparse_init(&options, argv);
-	while ((option = optparse(&options, "d:")) != -1) {
-		switch (option) {
-		case 'd':
-			size = atoi(options.optarg);
+	switch (argc) {
+	case 1:
+		size = 512;
+		break;
+	case 2:
+		char *endptr;
+		long s = strtol(argv[1], &endptr, 10);
+		if (s <= INT_MAX && s >= INT_MIN && *endptr == '\0') {
+			size = (int)s;
 			break;
-		case '?':
-			SDL_Log("%s: %s\n", argv[0], options.errmsg);
-			return 1;
 		}
+		// fall through
+	default:
+		SDL_Log("Usage: %s [resolution]", argv[0]);
+		return 1;
 	}
+
 
 	int tile = size / 7;
 	int half_tile = size / 14;

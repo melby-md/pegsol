@@ -45,7 +45,7 @@ The executable is named `pegsol` on \*NIX and `pegsol.exe` on Windows.
 
 You can adjust the window size in pixels in the command line:
 
-    ./pegsol -d 600
+    ./pegsol 600
 
 ## How to Play
 
