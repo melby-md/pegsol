@@ -225,15 +225,11 @@ main(int argc, char *argv[])
 		switch (e.type) {
 
 		case SDL_KEYDOWN: 
-			switch (e.key.keysym.sym) {
-			case 'r':
+			if (e.key.keysym.sym == 'r') {
 				setup_board(pegs, &selected);
 				break;
-			case 'q':
-				quit = true;
-				continue;
 			}
-			break;
+			continue;
 
 		case SDL_QUIT:
 			quit = true;
