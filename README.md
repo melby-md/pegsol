@@ -53,9 +53,9 @@ You can adjust the window size in pixels in the command line:
 
 This version uses the english board and is played with the mouse. You click on
 a peg, it becomes green, click on a vacant spot you wish to move the peg, if it
-is an invalid move nothing will happen. To quit press `q` on the keyboard, to
-restart press `r`. When there are no moves left a popup will appear saying if
-you win or lose with the options to restart or quit.
+is an invalid move nothing will happen. To restart the game, press `r`. When
+there are no moves left a popup will appear saying if you win or lose with the
+options to restart or quit.
 
 ## Copyright 
 
