@@ -57,13 +57,9 @@ is an invalid move nothing will happen. To quit press `q` on the keyboard, to
 restart press `r`. When there are no moves left a popup will appear saying if
 you win or lose with the options to restart or quit.
 
-## License
+## Copyright 
 
 Copyright 2023 Pedro Debs &lt;<pedrodebs1@gmail.com>&gt;
 
-This software is released under the 0BSD license unless otherwise noted (see the
-`LICENSE` file or <https://spdx.org/licenses/0BSD.html>).
-
-The file `optparse.h` was obtained in <https://github.com/skeeto/optparse>
-and is free and unencumbered software released into the public domain.
+This software is licensed under the 0BSD license (see the `LICENSE` file).
 
