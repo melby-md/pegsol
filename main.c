@@ -153,14 +153,16 @@ main(int argc, char *argv[])
 	case 1:
 		size = 512;
 		break;
-	case 2:
+	case 2: {
 		char *endptr;
 		long s = strtol(argv[1], &endptr, 10);
 		if (s <= INT_MAX && s >= INT_MIN && *endptr == '\0') {
 			size = (int)s;
 			break;
 		}
-		// fall through
+	}
+	// fall through
+
 	default:
 		SDL_Log("Usage: %s [resolution]", argv[0]);
 		return 1;
@@ -235,7 +237,7 @@ main(int argc, char *argv[])
 			quit = true;
 			continue;
 
-		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONDOWN: {
 			int x, y;
 			SDL_GetMouseState(&x, &y);
 
@@ -279,7 +281,7 @@ main(int argc, char *argv[])
 
 			render(renderer, pegt, pegs, size, selected);
 
-			char msg[] = "You Win!\nThere is only 1 peg left!";
+			char msg[40] = "You Win!\nThere is only 1 peg left!";
 			if (res > 1)
 				// Don't worry, there will never be an overflow here :)
 				sprintf(msg, "You lose\nThere are %d pegs left", res);
@@ -311,6 +313,7 @@ main(int argc, char *argv[])
 			else
 				quit = true;
 			break;
+		}
 
 		default:
 			continue;

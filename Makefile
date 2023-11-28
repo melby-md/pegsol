@@ -1,6 +1,6 @@
 CC = $(CROSS)cc
 WINDRES = $(CROSS)windres
-WARN = -Wall -Wextra -Wvla -Wno-unused-parameter -Wno-unused-function
+WARN = -Wall -Wextra -Wvla -pedantic
 
 SDL_CONFIG = sdl2-config
 SDL_LIB = --static-libs
