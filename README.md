@@ -37,7 +37,7 @@ to statically link SDL:
 
 to cross-compile the Windows executable:
 
-    make CROSS="x86_64-w64-mingw32-"
+    make CROSS="x86_64-w64-mingw32-" OS="Windows_NT"
 
 ## Running
 
