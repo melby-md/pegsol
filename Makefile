@@ -3,8 +3,11 @@ WINDRES = $(CROSS)windres
 WARN = -Wall -Wextra -Wvla -pedantic
 
 SDL_CONFIG = sdl2-config
-SDL_LIB = --static-libs
-SDL_LIB$(STATIC_SDL) = --libs
+
+SDL_LIB_ = --libs
+SDL_LIB_0 = --libs
+SDL_LIB_1 = --static-libs
+SDL_LIB = $(SDL_LIB_$(STATIC_SDL))
 
 Windows_NT = .exe
 
