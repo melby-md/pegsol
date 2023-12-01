@@ -31,7 +31,7 @@ to use pkg-config instead:
 
     make SDL_CONFIG="pkg-config sdl2"
 
-to statically link SDL:
+to statically link SDL (windows only):
 
     make STATIC_SDL=1
 
